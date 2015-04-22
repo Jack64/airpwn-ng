@@ -73,29 +73,30 @@
 ##~~~~~~~~~~~~~~~~~~~~~~~ BEGIN Repetitious Functions ~~~~~~~~~~~~~~~~~~~~~~~##
 monitor--()
 {
+	awk -v var="$variable" 'BEGIN {print var}'
 ## src MAC -- Victim
-vicmac=$(awk '{print $i0}' LOG | cut -d: -f 2-)
+vicmac=$(awk -v i0="$i0" '{print $i0}' LOG | cut -d: -f 2-)
 
 ## src MAC -- Router LAN MAC
-rtrmac=$(awk '{print $i1}' LOG | cut -d: -f 2-)
+rtrmac=$(awk -v i1="$i1" '{print $i1}' LOG | cut -d: -f 2-)
 
 ## src IP -- Victim
-vicip=$(awk '{print $i2}' LOG | cut -d. -f -4)
+vicip=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f -4)
 
 ## src port -- Victim
-vicport=$(awk '{print $i2}' LOG | cut -d. -f 5-)
+vicport=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f 5-)
 
 ## dst IP -- Server
-svrip=$(awk '{print $i3}' LOG | cut -d. -f -4)
+svrip=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f -4)
 
 ## svr port -- Server
-svrport=$(awk '{print $i3}' LOG | cut -d. -f 5- | sed 's/://')
+svrport=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f 5- | sed 's/://')
 
 ## sequence number + length
-acknum=$(awk '{print $i4}' LOG | cut -d: -f2 | sed 's/,//')
+acknum=$(awk -v i4="$i4" '{print $i4}' LOG | cut -d: -f2 | sed 's/,//')
 
 ## old acknowledgement number
-seqnum=$(awk '{print $i5}' LOG | sed 's/,//')
+seqnum=$(awk -v i5="$i5" '{print $i5}' LOG | sed 's/,//')
 }
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
