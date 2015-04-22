@@ -73,7 +73,7 @@
 ##~~~~~~~~~~~~~~~~~~~~~~~ BEGIN Repetitious Functions ~~~~~~~~~~~~~~~~~~~~~~~##
 monitor--()
 {
-	awk -v var="$variable" 'BEGIN {print var}'
+	
 ## src MAC -- Victim
 vicmac=$(awk -v i0="$i0" '{print $i0}' LOG | cut -d: -f 2-)
 
