@@ -41,8 +41,9 @@ Okay, so we have all of that, how do we use airpwn-ng?
 	- Using the channel for the managed mode NIC, set your 2nd WiFi NIC (This will be the one in monitor mode) to that channel.
 	- Ok, so at this point, you should have one NIC joined to a network, and the other NIC listening on the same channel
 	- Run the following:
-		- ./airpwn-ng <Inject File> <Sniff NIC> <Inject NIC>
+		- ./airpwn-ng <Inject File> <Sniff NIC> <Inject NIC> <Index Value>
 			- When you run it for the first time, you will get a small error due to the fact that the logfile has not been created yet, disregard this warning.
+			- To obtain the Index Value, run card-detect!
 
 Well, that just about wraps things up.  Hopefully the community finds this a useful tool.  Enjoy!
 Please refer to ToDo.lst if you have any questions regarding this script.  I promise, the answer is most likely in there!
